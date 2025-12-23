@@ -1,0 +1,22 @@
+
+services:
+  mysql:
+    build: ./docker/mysql
+    container_name: docker-mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldb:/var/lib/mysql       #Databaseの永続化のためdocker volumeと繋げる
+      - ./SQL:/home/user/SQL                  #SQLフォルダーと/SQLを繋げる。/SQLはmysql/Dockerfileで作成
+      - ./SQL/demo.sql:/docker-entrypoint-initdb.d/02-demo.sql:ro
+    #  - ../mysql_log:/var/log/mysql  #log出力用
+    restart: always
+    environment:
+     MYSQL_ROOT_PASSWORD: password
+     MYSQL_DATABASE: demo
+
+
+volumes:
+  mysqldb:
+
+
