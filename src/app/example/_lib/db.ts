@@ -1,4 +1,4 @@
-import mysql from "mysql2/promise";
+import { Pool } from "pg";
 
 const {
   BIODB_DB_HOST = "127.0.0.1",
@@ -9,29 +9,28 @@ const {
 } = process.env;
 
 function getDbPort(): number {
-  if (!BIODB_DB_PORT) return 3306;
+  if (!BIODB_DB_PORT) return 5432;
   const parsed = Number(BIODB_DB_PORT);
-  return Number.isFinite(parsed) ? parsed : 3306;
+  return Number.isFinite(parsed) ? parsed : 5432;
 }
 
 declare global {
   // eslint-disable-next-line no-var
-  var __biodbPool: mysql.Pool | undefined;
+  var __biodbPool: Pool | undefined;
 }
 
-export function getPool(): mysql.Pool {
+export function getPool(): Pool {
   if (globalThis.__biodbPool) return globalThis.__biodbPool;
 
-  const pool = mysql.createPool({
+  const pool = new Pool({
     host: BIODB_DB_HOST,
     user: BIODB_DB_USER,
     password: BIODB_DB_PASSWORD,
     database: BIODB_DB_NAME_EXAMPLE,
     port: getDbPort(),
-    charset: "utf8mb4",
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
   });
 
   if (process.env.NODE_ENV !== "production") {

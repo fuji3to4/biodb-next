@@ -1,0 +1,2 @@
+-- PostgreSQL用の初期化スクリプト
+-- ユーザーはdocker-compose.ymlで作成されるため、ここでは追加の設定のみ

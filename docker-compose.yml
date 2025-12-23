@@ -1,22 +1,23 @@
 
 services:
-  mysql:
-    build: ./docker/mysql
-    container_name: docker-mysql
+  postgres:
+    build: ./docker/postgres
+    container_name: docker-postgres
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysqldb:/var/lib/mysql       #Databaseの永続化のためdocker volumeと繋げる
-      - ./SQL:/home/user/SQL                  #SQLフォルダーと/SQLを繋げる。/SQLはmysql/Dockerfileで作成
+      - pgdata:/var/lib/postgresql/data
+      - ./SQL:/home/user/SQL
       - ./SQL/demo.sql:/docker-entrypoint-initdb.d/02-demo.sql:ro
-    #  - ../mysql_log:/var/log/mysql  #log出力用
     restart: always
     environment:
-     MYSQL_ROOT_PASSWORD: password
-     MYSQL_DATABASE: demo
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: demo
+      BIODB_DB_NAME_EXAMPLE: demo
 
 
 volumes:
-  mysqldb:
+  pgdata:
 
 

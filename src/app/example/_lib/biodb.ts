@@ -1,4 +1,3 @@
-import { RowDataPacket } from "mysql2";
 import { getPool } from "./db";
 
 export type SearchRow = {
@@ -69,22 +68,22 @@ export async function searchPdb(params: {
   let sql = `
     select PDB.pdbID, PDB.method, PDB.resolution, PDB.class, Protein.name, Protein.organism
     from PDB natural join PDB2Protein natural join Protein
-    where (PDB.pdbID like ?)
-      and (PDB.class like ?)
-      and (Protein.name like ?)
-      and (Protein.organism like ?)
+    where (PDB.pdbID like $1)
+      and (PDB.class like $2)
+      and (Protein.name like $3)
+      and (Protein.organism like $4)
   `;
 
   const values: Array<string | number> = [idLike, classLike, nameLike, orgLike];
 
   if (resNum !== null) {
-    sql += ` and (PDB.resolution <= ?)`;
+    sql += ` and (PDB.resolution <= $5)`;
     values.push(resNum);
   }
 
-  const [rows] = await pool.query<(RowDataPacket & SearchRow)[]>(sql, values);
-  return rows.map((r) => ({
-    pdbID: String(r.pdbID),
+  const result = await pool.query(sql, values);
+  return result.rows.map((r: any) => ({
+    pdbID: String(r.pdbid),
     method: r.method ?? null,
     resolution: r.resolution === null ? null : Number(r.resolution),
     class: r.class ?? null,
@@ -100,16 +99,16 @@ export async function getPdbDetail(pdbID: string): Promise<PdbDetailRow | null> 
     select PDB.pdbID, PDB.method, PDB.resolution, PDB.chain, PDB.positions, PDB.deposited,
            PDB.class, PDB.url, Protein.name, Protein.organism, Protein.len
     from PDB natural join PDB2Protein natural join Protein
-    where PDB.pdbID = ?
+    where PDB.pdbID = $1
     limit 1
   `;
 
-  const [rows] = await pool.query<(RowDataPacket & PdbDetailRow)[]>(sql, [pdbID]);
-  if (!rows.length) return null;
+  const result = await pool.query(sql, [pdbID]);
+  if (!result.rows.length) return null;
 
-  const r = rows[0];
+  const r = result.rows[0];
   return {
-    pdbID: String(r.pdbID),
+    pdbID: String(r.pdbid),
     method: r.method ?? null,
     resolution: r.resolution === null ? null : Number(r.resolution),
     chain: r.chain ?? null,
