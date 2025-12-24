@@ -81,7 +81,7 @@ psql -U user -d postgres -f setting.sql
 
 ### 4. 開発サーバーの起動
 
-## .env.local ファイルを作成し、以下の環境変数を設定します：
+#### .env.local ファイルを作成し、以下の環境変数を設定します：
 
 ```bash
 cp example.env.local .env.local
@@ -89,7 +89,7 @@ cp example.env.local .env.local
 
 必要に応じて `.env.local` 内のデータベース接続情報を修正してください。
 
-その後、開発サーバーを起動します：
+#### その後、開発サーバーを起動します：
 
 ```bash
 npm run dev
