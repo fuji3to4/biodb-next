@@ -1,36 +1,178 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BioDB Next
 
-## Getting Started
+Next.js / PostgreSQL を使ったバイオデータベース演習用プロジェクト
 
-First, run the development server:
+## 必要な環境
+
+- Docker Desktop
+- Node.js 18以上
+- Git
+
+## セットアップ手順
+
+### 1. リポジトリのクローンと依存関係のインストール
+
+```bash
+git clone <repository-url>
+cd biodb-next
+npm install
+```
+
+### 2. PostgreSQL（Docker）の起動
+
+```bash
+# Docker Compose でPostgreSQLコンテナを起動
+docker compose up -d
+
+# コンテナが起動したか確認
+docker ps
+```
+
+### 3. データベースの初期化
+
+以下のどちらかのSQLスクリプトを実行してデータベースを作成・初期化します。
+
+#### demo データベース（PDB関連）
+
+```bash
+docker exec -i docker-postgres psql -U user -d postgres -f /home/user/SQL/demo.sql
+```
+
+#### database1（業者・商品・発注・納入）
+
+```bash
+docker exec -i docker-postgres psql -U user -d postgres -f /home/user/SQL/setting.sql
+```
+
+**dockerにbashで入ってから作成:**
+
+```bash
+docker exec -i docker-postgres bash
+
+psql -U user -d postgres -f demo.sql
+psql -U user -d postgres -f setting.sql
+```
+
+### 4. 開発サーバーの起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ブラウザで [http://localhost:3000](http://localhost:3000) を開く
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## プロジェクト構成
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+biodb-next/
+├── docker/
+│   └── postgres/          # PostgreSQL Docker設定
+│       ├── Dockerfile
+│       └── init.sql       # 初期化スクリプト（権限設定）
+├── SQL/
+│   ├── demo.sql          # demoデータベース（PDB、Protein）
+│   └── setting.sql       # database1（業者、商品、発注、納入）
+├── src/
+│   ├── app/
+│   │   ├── page.tsx      # トップページ
+│   │   └── example/      # 演習用ページ
+│   └── lib/
+│       └── db.ts         # データベース接続設定
+└── docker-compose.yml    # Docker Compose設定
+```
 
-## Learn More
+## データベース情報
 
-To learn more about Next.js, take a look at the following resources:
+### 接続情報
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **ホスト**: `127.0.0.1` (localhost)
+- **ポート**: `5432`
+- **ユーザー**: `user`
+- **パスワード**: `password`
+- **データベース**: `demo` または `database1`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### データベース構成
 
-## Deploy on Vercel
+#### demo データベース
+- **PDB**: タンパク質構造データ
+- **Protein**: タンパク質情報
+- **PDB2Protein**: PDBとProteinの関連テーブル
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### database1 データベース
+- **業者**: 取引業者情報
+- **商品**: 商品マスタ
+- **発注**: 発注履歴
+- **納入**: 納入履歴
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## よく使うコマンド
+
+### Docker操作
+
+```bash
+# コンテナ起動
+docker compose up -d
+
+# コンテナ停止
+docker compose down
+
+# コンテナに接続（psqlを使う）
+docker exec -it docker-postgres bash
+
+# コンテナ内でpsql起動
+psql -U user -d demo
+```
+
+### データベースリセット
+
+SQLスクリプトは `DROP DATABASE IF EXISTS` を含むため、再実行すればデータベースがクリーンに作り直されます：
+
+```bash
+docker exec -i docker-postgres psql -U user -d postgres -f /home/user/SQL/demo.sql
+```
+
+## トラブルシューティング
+
+### ポート5432が使用中
+
+PostgreSQLが既にローカルで起動している場合は停止するか、docker-compose.ymlのポート番号を変更してください。
+
+### データベース接続エラー
+
+1. Docker コンテナが起動しているか確認: `docker ps`
+2. 環境変数が正しいか確認: `.env.local` ファイルを作成し、以下を設定
+
+```env
+BIODB_DB_HOST=127.0.0.1
+BIODB_DB_PORT=5432
+BIODB_DB_USER=user
+BIODB_DB_PASSWORD=password
+BIODB_DB_NAME=demo
+```
+
+## 本番デプロイ（Neon等）
+
+外部PostgreSQLサービス（Neon、Supabase等）へのデプロイ:
+
+```bash
+# 接続文字列を取得後
+psql "postgresql://user:password@your-host.neon.tech/main" -f SQL/demo.sql
+```
+
+または
+
+```bash
+export DATABASE_URL="postgresql://user:password@your-host.neon.tech/main"
+psql $DATABASE_URL -f SQL/demo.sql
+```
+
+## 技術スタック
+
+- **フロントエンド**: Next.js 15 (App Router), React, TypeScript, Tailwind CSS
+- **データベース**: PostgreSQL 17
+- **開発環境**: Docker, Docker Compose
+- **その他**: shadcn/ui (UIコンポーネント)
+
+## ライセンス
+
+演習用プロジェクト
+
