@@ -1,5 +1,13 @@
--- PostgreSQL用のデモデータ
--- データベースはdocker-compose.ymlで作成されるため、ここではテーブル作成のみ
+-- PostgreSQL用のデモデータ（演習用）
+-- データベースを毎回クリーンに作り直すスクリプト
+-- 実行例: psql -U user -d postgres -f demo.sql
+
+-- 既存のデータベースを削除して作り直し
+DROP DATABASE IF EXISTS demo;
+CREATE DATABASE demo OWNER "user";
+
+-- demoデータベースに接続
+\connect demo
 
 -- テーブルを作成する
 CREATE TABLE PDB(

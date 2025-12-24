@@ -15,12 +15,6 @@ ENV LC_ALL=ja_JP.UTF-8
 
 # 初期化SQLをコピー
 COPY ./init.sql /docker-entrypoint-initdb.d/01-init.sql
-COPY ./init-demo.sh /docker-entrypoint-initdb.d/02-init-demo.sh
 
-# 初期の設定
-ENV UNAME=user
-ENV GNAME=user
-RUN groupadd $GNAME \
-    && useradd -m -s /bin/bash -g $GNAME $UNAME
-
-WORKDIR /home/$UNAME/SQL
+# コンテナログイン時の初期ディレクトリ
+WORKDIR /home/user/SQL

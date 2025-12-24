@@ -8,13 +8,12 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./SQL:/home/user/SQL
-      - ./SQL/demo.sql:/docker-entrypoint-initdb.d/02-demo.sql:ro
     restart: always
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: demo
-      BIODB_DB_NAME_EXAMPLE: demo
+      # POSTGRES_DB を指定しないため、デフォルトの postgres DB のみ作成
+      # 演習用なので user はスーパーユーザ相当の全権限を持つ
 
 
 volumes:

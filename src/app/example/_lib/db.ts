@@ -5,7 +5,8 @@ const {
   BIODB_DB_USER = "user",
   BIODB_DB_PASSWORD = "password",
   BIODB_DB_NAME_EXAMPLE = "demo",
-  BIODB_DB_PORT,
+  BIODB_DB_NAME_WORK="mydb",
+  BIODB_DB_PORT="5432",
 } = process.env;
 
 function getDbPort(): number {
