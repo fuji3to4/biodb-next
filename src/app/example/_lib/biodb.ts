@@ -68,10 +68,10 @@ export async function searchPdb(params: {
   let sql = `
     select PDB.pdbID, PDB.method, PDB.resolution, PDB.class, Protein.name, Protein.organism
     from PDB natural join PDB2Protein natural join Protein
-    where (PDB.pdbID like $1)
-      and (PDB.class like $2)
-      and (Protein.name like $3)
-      and (Protein.organism like $4)
+    where (PDB.pdbID ILIKE $1)
+      and (COALESCE(PDB.class, '') ILIKE $2)
+      and (COALESCE(Protein.name, '') ILIKE $3)
+      and (COALESCE(Protein.organism, '') ILIKE $4)
   `;
 
   const values: Array<string | number> = [idLike, classLike, nameLike, orgLike];
