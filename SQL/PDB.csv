@@ -1,0 +1,8 @@
+﻿pdbID,method,resolution,chain,positions,deposited,class,url
+1AGW,X-ray,2.4,A/B,456-765,1997/3/25,Enzyme,https://www.rcsb.org/structure/1AGW
+1CVS,X-ray,2.8,C/D,141-365,1999/8/24,Membrane,https://www.rcsb.org/structure/1CVS
+1A30,X-ray,2,A/B,489-587,1998/1/27,Enzyme,https://www.rcsb.org/structure/1A30
+1MBE,NMR,null,A,38-89,1995/5/19,DNA-Binding,https://www.rcsb.org/structure/1MBE
+1GUU,X-ray,1.6,A,38-89,2002/1/30,DNA-Binding,https://www.rcsb.org/structure/1A30
+1LMB,X-ray,1.8,3/4,2-93,1991/11/5,DNA-Binding,https://www.rcsb.org/structure/1LMB
+4RWF,X-ray,1.76,A,31-116,2014/12/3,Membrane,https://www.rcsb.org/structure/4RWF
