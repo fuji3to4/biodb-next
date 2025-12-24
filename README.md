@@ -8,6 +8,31 @@ Next.js / PostgreSQL を使ったバイオデータベース演習用プロジ�
 - Node.js 18以上
 - Git
 
+
+### Node.jsのインストール方法
+
+- [Node.js公式サイト](https://nodejs.org/)からVoltaによりLTSバージョンをインストールすることを推奨します。
+
+
+```bash
+# macOSを含むほとんどのUnixシステムでは1つのコマンドでインストールできます：
+winget install Volta.Volta
+
+# Node.jsのLTSバージョンをダウンロードしてインストールする：
+volta install node@lts
+
+# Node.jsのバージョンを確認する：
+node -v # "v24.12.0"が表示される。
+
+# npmのバージョンを確認する：
+npm -v # "11.6.2"が表示される。
+```
+
+
+### Gitのインストール方法
+
+- [Git公式サイト](https://git-scm.com/)からインストールしてください。
+
 ## セットアップ手順
 
 ### 1. リポジトリのクローンと依存関係のインストール
@@ -44,7 +69,8 @@ docker exec -i docker-postgres psql -U user -d postgres -f /home/user/SQL/demo.s
 docker exec -i docker-postgres psql -U user -d postgres -f /home/user/SQL/setting.sql
 ```
 
-**dockerにbashで入ってから作成:**
+
+#### dockerにbashで入ってから作成する方法もあります
 
 ```bash
 docker exec -i docker-postgres bash
@@ -54,6 +80,16 @@ psql -U user -d postgres -f setting.sql
 ```
 
 ### 4. 開発サーバーの起動
+
+## .env.local ファイルを作成し、以下の環境変数を設定します：
+
+```bash
+cp example.env.local .env.local
+```
+
+必要に応じて `.env.local` 内のデータベース接続情報を修正してください。
+
+その後、開発サーバーを起動します：
 
 ```bash
 npm run dev
