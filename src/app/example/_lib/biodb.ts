@@ -1,4 +1,5 @@
 import { getPool } from "./db";
+import bcrypt from "bcrypt";
 
 export type SearchRow = {
   pdbID: string;
@@ -120,4 +121,50 @@ export async function getPdbDetail(pdbID: string): Promise<PdbDetailRow | null> 
     organism: r.organism ?? null,
     len: r.len === null ? null : Number(r.len),
   };
+}
+
+export async function verifyUser(username: string, password: string): Promise<{ id: number; username: string } | null> {
+  const pool = getPool();
+
+  const sql = `
+    SELECT id, username, password
+    FROM Users
+    WHERE username = $1
+    LIMIT 1
+  `;
+
+  const result = await pool.query(sql, [username]);
+  if (!result.rows.length) {
+    return null;
+  }
+
+  const user = result.rows[0];
+  const isPasswordValid = await bcrypt.compare(password, String(user.password));
+  
+  if (!isPasswordValid) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    username: user.username,
+  };
+}
+
+export async function hashPassword(password: string): Promise<string> {
+  const saltRounds = 10;
+  return bcrypt.hash(password, saltRounds);
+}
+
+export async function saveUser(username: string, hashedPassword: string): Promise<{ id: number; username: string }> {
+  const pool = getPool();
+
+  const sql = `
+    INSERT INTO Users (username, password)
+    VALUES ($1, $2)
+    RETURNING id, username
+  `;
+
+  const result = await pool.query(sql, [username, hashedPassword]);
+  return result.rows[0];
 }

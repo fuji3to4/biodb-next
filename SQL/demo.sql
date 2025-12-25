@@ -38,6 +38,14 @@ CREATE TABLE PDB2Protein(
     PRIMARY KEY(PDBID, proteinID)  -- 主キーが複合キーの場合キーとなる属性を並べる
 );
 
+CREATE TABLE Users(
+    id SERIAL NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    PRIMARY KEY(id),
+    UNIQUE(username)               -- usernameは一意制約(UNIQUE)を設定
+);
+
 
 INSERT INTO PDB VALUES
 ('1AGW','X-ray','2.40','A/B','456-765','1997-03-25','Enzyme','https://www.rcsb.org/structure/1AGW'),
